@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CODFlowCommandeExtraction",
+  "description": "Schéma JSON strict pour l'extraction de commandes e-commerce COD à partir de messages libres (Français / Darija).",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": ["string", "null"],
+      "description": "Nom complet ou prénom du client extrait du message. Null si non mentionné."
+    },
+    "telephone": {
+      "type": ["string", "null"],
+      "description": "Numéro de téléphone marocain nettoyé (ex: 0661234567 ou +212661234567). Null si non renseigné."
+    },
+    "ville": {
+      "type": ["string", "null"],
+      "description": "Nom de la ville marocaine de livraison normalisée (ex: Casablanca, Rabat, Marrakech, Fès, Tanger). Null si inconnue."
+    },
+    "adresse": {
+      "type": ["string", "null"],
+      "description": "Adresse physique précise, quartier, rue ou point de repère extrait. Null si absent."
+    },
+    "articles": {
+      "type": "array",
+      "description": "Liste des articles commandés avec leurs quantités respectives.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reference_ou_nom": {
+            "type": "string",
+            "description": "Nom ou référence du produit identifié (ex: Huile d'Argan, Pack Hammam, Savon Noir)."
+          },
+          "quantite": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Quantité commandée (entier >= 1). Par défaut 1 si le produit est mentionné sans quantité explicite."
+          }
+        },
+        "required": ["reference_ou_nom", "quantite"],
+        "additionalProperties": false
+      }
+    },
+    "champs_manquants": {
+      "type": "array",
+      "description": "Liste des champs obligatoires indispensables manquants pour valider la commande (parmi : 'nom', 'telephone', 'ville', 'adresse', 'articles').",
+      "items": {
+        "type": "string",
+        "enum": ["nom", "telephone", "ville", "adresse", "articles"]
+      }
+    }
+  },
+  "required": ["nom", "telephone", "ville", "adresse", "articles", "champs_manquants"],
+  "additionalProperties": false
+}
+

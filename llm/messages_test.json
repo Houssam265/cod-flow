@@ -1,0 +1,459 @@
+[
+  {
+    "id": "MSG-01",
+    "categorie": "complet_francais",
+    "description": "Commande complète standard en français avec toutes les coordonnées",
+    "message": "Bonjour, je souhaite commander 2 bouteilles d'huile d'argan bio et 1 savon noir à l'eucalyptus. Mon nom est Youssef El Amrani, téléphone 0661234567. Livraison à Casablanca, 12 Rue Ibn Batouta, Maarif.",
+    "json_attendu": {
+      "nom": "Youssef El Amrani",
+      "telephone": "0661234567",
+      "ville": "Casablanca",
+      "adresse": "12 Rue Ibn Batouta, Maarif",
+      "articles": [
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 2
+        },
+        {
+          "reference_ou_nom": "Savon Noir Traditionnel à l'Eucalyptus 250g",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-02",
+    "categorie": "complet_darija",
+    "description": "Commande complète en darija marocaine translittérée (Arabizi)",
+    "message": "salam khouya bghit 1 pack hammam royal o 1 zit argan 3afak. ana smiti Mehdi Chraibi num diali 0670112233 siftou lia l marrakech 8 derb dabachi lmedina.",
+    "json_attendu": {
+      "nom": "Mehdi Chraibi",
+      "telephone": "0670112233",
+      "ville": "Marrakech",
+      "adresse": "8 Derb Dabachi, Médina",
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        },
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-03",
+    "categorie": "fautes_orthographe",
+    "description": "Commande complète avec fautes de frappe et phonétique",
+    "message": "bjr je vx commender 1 pack haman avec 2 huil dargan stp. Fatima Zahra Bennani 06 62 98 76 54 Rabat agdal av allal ben abdellah num 45",
+    "json_attendu": {
+      "nom": "Fatima Zahra Bennani",
+      "telephone": "0662987654",
+      "ville": "Rabat",
+      "adresse": "45 Avenue Allal Ben Abdellah, Agdal",
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        },
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 2
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-04",
+    "categorie": "format_international",
+    "description": "Numéro de téléphone au format international +212",
+    "message": "Salam, je commande 3 pots de savon noir traditionnel. Nom : Salma Tazi. Tél : +212663445566. Ville : Fès, 18 Boulevard Hassan II, Ville Nouvelle.",
+    "json_attendu": {
+      "nom": "Salma Tazi",
+      "telephone": "+212663445566",
+      "ville": "Fès",
+      "adresse": "18 Boulevard Hassan II, Ville Nouvelle",
+      "articles": [
+        {
+          "reference_ou_nom": "Savon Noir Traditionnel à l'Eucalyptus 250g",
+          "quantite": 3
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-05",
+    "categorie": "rupture_potentielle",
+    "description": "Commande d'un article à stock critique (Sérum Figue de Barbarie)",
+    "message": "Bonjour, merci de m'envoyer 2 flacons de sérum anti-âge figue de barbarie. Karim Berrada, 0761889900, Tanger, 24 Avenue Mohammed V, Malabata.",
+    "json_attendu": {
+      "nom": "Karim Berrada",
+      "telephone": "0761889900",
+      "ville": "Tanger",
+      "adresse": "24 Avenue Mohammed V, Malabata",
+      "articles": [
+        {
+          "reference_ou_nom": "Sérum Anti-Âge Figue de Barbarie 30ml",
+          "quantite": 2
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-06",
+    "categorie": "incomplet_sans_adresse",
+    "description": "Commande avec nom, tel et ville mais sans adresse précise",
+    "message": "Salam khoya bghit 2 safran pur taliouine. Omar Alami 0612345678 à Casablanca.",
+    "json_attendu": {
+      "nom": "Omar Alami",
+      "telephone": "0612345678",
+      "ville": "Casablanca",
+      "adresse": null,
+      "articles": [
+        {
+          "reference_ou_nom": "Safran Pur de Taliouine (1g)",
+          "quantite": 2
+        }
+      ],
+      "champs_manquants": [
+        "adresse"
+      ]
+    }
+  },
+  {
+    "id": "MSG-07",
+    "categorie": "incomplet_sans_nom",
+    "description": "Commande sans nom du destinataire",
+    "message": "Merci d'envoyer 1 pack hammam royal au 0655443322. Livraison Tanger, quartier Tanja Balia Résidence Al Yassamine imm 4.",
+    "json_attendu": {
+      "nom": null,
+      "telephone": "0655443322",
+      "ville": "Tanger",
+      "adresse": "Quartier Tanja Balia Résidence Al Yassamine imm 4",
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": [
+        "nom"
+      ]
+    }
+  },
+  {
+    "id": "MSG-08",
+    "categorie": "incomplet_sans_telephone",
+    "description": "Commande avec nom et adresse mais sans numéro de téléphone",
+    "message": "Bonjour, je prends 1 huile d'argan bio. Je m'appelle Amine Mansouri, j'habite à Marrakech Guéliz rue de la Liberté.",
+    "json_attendu": {
+      "nom": "Amine Mansouri",
+      "telephone": null,
+      "ville": "Marrakech",
+      "adresse": "Guéliz rue de la Liberté",
+      "articles": [
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": [
+        "telephone"
+      ]
+    }
+  },
+  {
+    "id": "MSG-09",
+    "categorie": "incomplet_sans_ville",
+    "description": "Commande avec rue et quartier mais sans précision de la ville",
+    "message": "Bghit 1 savon noir eucalyptus. Nom : Nadia Chraibi, tel: 0622110099. Adresse : Rue 14 Hay Salam numéro 25.",
+    "json_attendu": {
+      "nom": "Nadia Chraibi",
+      "telephone": "0622110099",
+      "ville": null,
+      "adresse": "Rue 14 Hay Salam numéro 25",
+      "articles": [
+        {
+          "reference_ou_nom": "Savon Noir Traditionnel à l'Eucalyptus 250g",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": [
+        "ville"
+      ]
+    }
+  },
+  {
+    "id": "MSG-10",
+    "categorie": "demande_prix",
+    "description": "Message de renseignement ou demande de prix sans engagement",
+    "message": "Salam khoya chhal taman dial pack hammam et est-ce que la livraison est gratuite ?",
+    "json_attendu": {
+      "nom": null,
+      "telephone": null,
+      "ville": null,
+      "adresse": null,
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": [
+        "nom",
+        "telephone",
+        "ville",
+        "adresse"
+      ]
+    }
+  },
+  {
+    "id": "MSG-11",
+    "categorie": "chiffres_en_darija",
+    "description": "Quantité écrite en lettres darija ('jouj' = 2, 'we7da' = 1)",
+    "message": "Salam bghit jouj qer3at dial zit argan o we7da sabon lbeldi 3afak. Hassan Kadiri 0661998877 Casa sidi maarouf n 12",
+    "json_attendu": {
+      "nom": "Hassan Kadiri",
+      "telephone": "0661998877",
+      "ville": "Casablanca",
+      "adresse": "Sidi Maarouf n 12",
+      "articles": [
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 2
+        },
+        {
+          "reference_ou_nom": "Savon Noir Traditionnel à l'Eucalyptus 250g",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-12",
+    "categorie": "commande_multi_articles",
+    "description": "Panier complet avec 3 références distinctes",
+    "message": "Bonjour, commande pour Zineb Idrissi (0664556677). 1 pack hammam royal, 2 huiles d'argan bio et 1 safran taliouine. Adresse : Rabat Hay Riad secteur 14 villa 8.",
+    "json_attendu": {
+      "nom": "Zineb Idrissi",
+      "telephone": "0664556677",
+      "ville": "Rabat",
+      "adresse": "Hay Riad secteur 14 villa 8",
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        },
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 2
+        },
+        {
+          "reference_ou_nom": "Safran Pur de Taliouine (1g)",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-13",
+    "categorie": "format_condense",
+    "description": "Message ultra-court style messagerie instantanée",
+    "message": "1 argan svp. Khalid Tahiri 0677889900 Meknes ville nouvelle rue antsirabe 6",
+    "json_attendu": {
+      "nom": "Khalid Tahiri",
+      "telephone": "0677889900",
+      "ville": "Meknès",
+      "adresse": "Ville Nouvelle rue Antsirabe 6",
+      "articles": [
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-14",
+    "categorie": "doublon_source_a",
+    "description": "Première commande émise par Mehdi Chraibi pour test de récurrence",
+    "message": "Salam khoya khesni 1 pack hammam royal. Mehdi Chraibi 0670112233 Marrakech 8 Derb Dabachi",
+    "json_attendu": {
+      "nom": "Mehdi Chraibi",
+      "telephone": "0670112233",
+      "ville": "Marrakech",
+      "adresse": "8 Derb Dabachi",
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-15",
+    "categorie": "doublon_source_b",
+    "description": "Message identique renvoyé quelques minutes après (test anti-doublon S1)",
+    "message": "Salam khoya khesni 1 pack hammam royal. Mehdi Chraibi 0670112233 Marrakech 8 Derb Dabachi",
+    "json_attendu": {
+      "nom": "Mehdi Chraibi",
+      "telephone": "0670112233",
+      "ville": "Marrakech",
+      "adresse": "8 Derb Dabachi",
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-16",
+    "categorie": "forte_quantite",
+    "description": "Commande avec quantités élevées pour tester les seuils de stock",
+    "message": "Bonjour, je voudrais 15 bouteilles d'huile d'argan pour des cadeaux d'entreprise. Rachid Belkacem, tél 0661122334, Casablanca bd d'Anfa n 150.",
+    "json_attendu": {
+      "nom": "Rachid Belkacem",
+      "telephone": "0661122334",
+      "ville": "Casablanca",
+      "adresse": "Bd d'Anfa n 150",
+      "articles": [
+        {
+          "reference_ou_nom": "Huile d'Argan Pure Bio 100ml",
+          "quantite": 15
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-17",
+    "categorie": "adresse_atypique",
+    "description": "Adresse marocaine avec indications de repères populaires",
+    "message": "Salam sifat lia 2 savon noir l Agadir hay dakhla 9dam pharmacie salam en face du café atlas. Nawal Alaoui 0668901234",
+    "json_attendu": {
+      "nom": "Nawal Alaoui",
+      "telephone": "0668901234",
+      "ville": "Agadir",
+      "adresse": "Hay Dakhla près pharmacie Salam en face du café Atlas",
+      "articles": [
+        {
+          "reference_ou_nom": "Savon Noir Traditionnel à l'Eucalyptus 250g",
+          "quantite": 2
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-18",
+    "categorie": "formule_politesse",
+    "description": "Message très poli avec invocation religieuse courante",
+    "message": "Salam alaykom lah yjazik bikhir akhi bghit nakhod 1 sérum figue de barbarie. Houda Senhaji 0663112233 Salé Bettana rue Ibn Rochd 10.",
+    "json_attendu": {
+      "nom": "Houda Senhaji",
+      "telephone": "0663112233",
+      "ville": "Salé",
+      "adresse": "Bettana rue Ibn Rochd 10",
+      "articles": [
+        {
+          "reference_ou_nom": "Sérum Anti-Âge Figue de Barbarie 30ml",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-19",
+    "categorie": "quantite_implicite",
+    "description": "Produit mentionné au singulier sans chiffre explicite ('un' sous-entendu)",
+    "message": "Je commande le pack hammam royal s'il vous plaît. Nom : Tariq Jabri, 0667001122, Kenitra centre ville rue de Mamora imm 2.",
+    "json_attendu": {
+      "nom": "Tariq Jabri",
+      "telephone": "0667001122",
+      "ville": "Kénitra",
+      "adresse": "Centre ville rue de Mamora imm 2",
+      "articles": [
+        {
+          "reference_ou_nom": "Pack Hammam Royal",
+          "quantite": 1
+        }
+      ],
+      "champs_manquants": []
+    }
+  },
+  {
+    "id": "MSG-20",
+    "categorie": "message_ambigu",
+    "description": "Message avec hésitation entre deux produits",
+    "message": "Salut, j'hésite entre le sérum figue et l'huile d'argan, lequel est le meilleur pour les rides ? Mon tel est 0661778899 si vous pouvez m'appeler.",
+    "json_attendu": {
+      "nom": null,
+      "telephone": "0661778899",
+      "ville": null,
+      "adresse": null,
+      "articles": [],
+      "champs_manquants": [
+        "nom",
+        "ville",
+        "adresse",
+        "articles"
+      ]
+    }
+  },
+  {
+    "id": "MSG-21",
+    "categorie": "hors_sujet",
+    "description": "Simple salutation sans intention d'achat ni article",
+    "message": "Salam cv khoya ?",
+    "json_attendu": {
+      "nom": null,
+      "telephone": null,
+      "ville": null,
+      "adresse": null,
+      "articles": [],
+      "champs_manquants": [
+        "nom",
+        "telephone",
+        "ville",
+        "adresse",
+        "articles"
+      ]
+    }
+  },
+  {
+    "id": "MSG-22",
+    "categorie": "safran_multi_grammes",
+    "description": "Commande spécifique de safran pur en quantité multiple",
+    "message": "Salam, je veux 5 boîtes de safran pur de taliouine svp. Aicha Bennouna 0662334455 Tétouan Wilaya avenue Moulay Youssef 14.",
+    "json_attendu": {
+      "nom": "Aicha Bennouna",
+      "telephone": "0662334455",
+      "ville": "Tétouan",
+      "adresse": "Wilaya avenue Moulay Youssef 14",
+      "articles": [
+        {
+          "reference_ou_nom": "Safran Pur de Taliouine (1g)",
+          "quantite": 5
+        }
+      ],
+      "champs_manquants": []
+    }
+  }
+]
+

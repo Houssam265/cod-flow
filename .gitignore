@@ -1,0 +1,35 @@
+# Environnement local et secrets
+.env
+.env.local
+*.env
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Logs et runtime
+*.log
+logs/
+.system_generated/
+
+# Odoo runtime local / données montées
+odoo/addons/
+odoo/config/odoo.conf
+data/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+docs/post_linkedin.md
