@@ -1,11 +1,11 @@
 # Architecture Technique et Fonctionnelle - COD-Flow
 
 ## 1. Vision et Problématique Métier
-Au Maroc, le commerce en ligne repose à plus de 85% sur le modèle **Cash On Delivery (COD)**, où les transactions s'initient sur les canaux conversationnels (WhatsApp, Telegram, Instagram). 
+Au Maroc, le commerce en ligne repose très largement sur le modèle **Cash On Delivery (COD)**, où les transactions s'initient sur les canaux conversationnels (WhatsApp, Telegram, Instagram). 
 Ce mode de fonctionnement génère trois goulots d'étranglement critiques pour les e-commerçants :
-1. **Saisie manuelle fastidieuse :** Recopier manuellement les messages non structurés (Français, Darija, fautes) dans un ERP prend 3 à 5 minutes par commande.
+1. **Saisie manuelle fastidieuse :** Recopier manuellement les messages non structurés (Français, Darija, fautes) dans un ERP prend un temps significatif (hypothèse : 3 à 5 minutes par commande, durée à mesurer).
 2. **Erreurs et doublons :** Mauvais numéros de téléphone, oublis d'articles, commandes passées en double créant des surcoûts d'expédition.
-3. **Taux d'échec de livraison élevé (20% à 30%) :** Absence de relances automatisées des clients injoignables et retards de synchronisation avec le transporteur.
+3. **Taux d'échec de livraison élevé :** Risque important de retours (hypothèse : 20 % à 30 % d'échec, taux réel à mesurer) lié à l'absence de relances automatisées des clients injoignables et aux retards de synchronisation avec le transporteur.
 
 **COD-Flow** résout l'ensemble de cette chaîne en créant une passerelle automatisée de bout en bout entre la messagerie instantanée, un LLM spécialisé, Make.com, et **Odoo 18 Community**.
 
@@ -33,17 +33,17 @@ flowchart TD
     end
 
     subgraph ERP["ERP Odoo 18 Community (Docker)"]
-        SO["sale.order\n(Devis & Commandes)"]
-        PARTNER["res.partner\n(Clients +212)"]
-        PROD["product.product\n(Stocks & Articles)"]
-        PICK["stock.picking\n(Bons de livraison)"]
-        PO["purchase.order\n(Demandes de réassort)"]
-        INV["account.move\n(Facturation)"]
-        PAY["account.payment\n(Encaissements COD)"]
+        SO["sale.order<br/>(Devis & Commandes)"]
+        PARTNER["res.partner<br/>(Clients +212)"]
+        PROD["product.product<br/>(Stocks & Articles)"]
+        PICK["stock.picking<br/>(Bons de livraison)"]
+        PO["purchase.order<br/>(Demandes de réassort)"]
+        INV["account.move<br/>(Facturation)"]
+        PAY["account.payment<br/>(Encaissements COD)"]
     end
 
     subgraph Logistique["Logistique & Transporteur"]
-        SHEET["Google Sheets Transporteur\n(Expéditions & Statuts)"]
+        SHEET["Google Sheets Transporteur<br/>(Expéditions & Statuts)"]
         LIVREUR["Livreur / Agence COD"]
     end
 
@@ -77,7 +77,7 @@ flowchart TD
     S3 -- Livré --> PICK
     S3 -- Livré --> INV
     INV --> PAY
-    S3 -- Injoignable (J+1, J+2) --> TG
+    S3 -- "Injoignable (J+1, J+2)" --> TG
     S3 -- Refusé --> SO
 
     %% Flux S4
@@ -100,7 +100,7 @@ flowchart TD
 | **Moteur ERP** | Odoo 18 Community Edition | Gestion des ventes, CRM, gestion de stock par emplacement, facturation et paiements |
 | **API Gateway ERP** | XML-RPC standard (`/xmlrpc/2/object`) | Interface sans dépendances externes pour l'automatisation Make et scripts Python |
 | **Orchestrateur** | Make.com (Scénarios S1 à S4) | Routage des webhooks, orchestration des flux métier, logique décisionnelle |
-| **Moteur LLM** | GPT-4o-mini / Gemini Flash | Extraction sémantique bilingue (Français, Darija, Arabizi) vers JSON strict |
+| **Moteur LLM** | Modèle LLM à choisir (supportant les Structured Outputs / JSON strict, ex: GPT-4o-mini, Gemini Flash...) | Extraction sémantique bilingue (Français, Darija, Arabizi) vers JSON strict |
 | **Simulateur Logistique** | Google Sheets API | Registre partagé avec le transporteur COD (livré, injoignable, refusé) |
 | **Canaux Utilisateurs** | Telegram Bot API / Twilio WhatsApp | Messagerie bidirectionnelle avec les clients finaux |
 | **Canal Superviseur** | Telegram Bot API | Alertes d'erreurs en temps réel et diffusion du rapport d'activité quotidien à 18h |

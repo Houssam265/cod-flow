@@ -1,12 +1,12 @@
 # Cahier des Charges Fonctionnel et Technique - Projet COD-Flow
 
 ## 1. Contexte et Objectifs du Projet
-Le projet **COD-Flow** s'inscrit dans le cadre d'un Projet de Fin d'Études (PFE) d'ingénierie logicielle spécialisé dans l'écosystème ERP (Odoo / SAP). Il vise à concevoir, déployer et évaluer une architecture d'automatisation intégrale pour les petites et moyennes entreprises marocaines opérant en **Cash On Delivery (COD)**.
+Le projet **COD-Flow** est un projet personnel de portfolio en automatisation ERP (Odoo / SAP). Il vise à concevoir, déployer et évaluer une architecture d'automatisation intégrale pour les petites et moyennes entreprises marocaines opérant en **Cash On Delivery (COD)**.
 
 ### 1.1 Objectifs Clés
 - **Automatisation Zéro Saisie :** Réduire le temps de traitement d'une commande reçue par messagerie instantanée à moins de 5 secondes.
 - **Fiabilité des Données :** Éliminer les erreurs de retranscription manuelle grâce à un parseur sémantique LLM spécialisé pour le dialecte marocain (Darija / Arabizi) et le Français.
-- **Optimisation de la Délivrance COD :** Réduire le taux de retour des colis (actuellement estimé entre 20% et 30% au Maroc) grâce à un cycle automatisé de relances ciblées à J+1 et J+2 pour les clients injoignables.
+- **Optimisation de la Délivrance COD :** Réduire le taux de retour des colis (hypothèse : 20 % à 30 % d'échec, taux réel à mesurer) grâce à un cycle automatisé de relances ciblées à J+1 et J+2 pour les clients injoignables.
 - **Bouclage Comptable Immédiat :** Clôturer automatiquement le cycle logistique et financier dans l'ERP dès la notification de remise des espèces par le transporteur.
 
 ---
@@ -58,13 +58,13 @@ Le projet **COD-Flow** s'inscrit dans le cadre d'un Projet de Fin d'Études (PFE
 - **Base de Données :** PostgreSQL 16 Alpine conteneurisé avec volumes persistants.
 - **Protocoles d'Intégration :** XML-RPC standard via `/xmlrpc/2/common` et `/xmlrpc/2/object`.
 - **Orchestration de Flux :** Make.com (scénarios modulaires S1, S2, S3, S4).
-- **Moteur d'IA :** Modèle de langage avec Structured Outputs (GPT-4o-mini / Gemini Flash).
+- **Moteur d'IA :** Modèle de langage à choisir avec support Structured Outputs / JSON Schema (ex: GPT-4o-mini, Gemini Flash, etc.).
 - **Langage de Scripting :** Python 3 (bibliothèque standard uniquement pour garantir l'indépendance de déploiement).
 
 ### 3.2 Sécurité et Confidentialité
 - **Gestion des Secrets :** Aucun mot de passe, jeton ou clé d'API ne doit figurer dans le code source versionné. Utilisation exclusive du fichier `.env` protégé par `.gitignore`.
-- **Conformité des Données Personnelles :** Traitement des numéros de téléphone et adresses conforme aux recommandations de protection des données (CNDP au Maroc).
-- **Isolation :** Déploiement local sur réseau Docker fermé avec exposition stricte des ports requis (8069 pour le serveur web/API).
+- **Protection des Données Personnelles :** Traitement des coordonnées clients (téléphone, adresse) appliquant les principes de minimisation des données (sensibilisation aux recommandations CNDP au Maroc, sans garantie de conformité légale formelle pour cet environnement de test).
+- **Exposition Réseau :** Port configurable (8269 en local) ; un tunnel expose Odoo pour la démo.
 
 ---
 

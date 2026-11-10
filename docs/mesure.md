@@ -69,3 +69,11 @@ Lors de vos essais manuels, classez les erreurs observées dans les catégories 
 3. **Doublon non détecté :** Création d'une seconde commande identique pour le même client à quelques minutes d'intervalle.
 4. **Omission d'adresse :** Validation d'un bon de commande alors qu'il manque le quartier ou la rue, bloquant la livraison finale.
 
+---
+
+## 5. Limites
+Ce protocole expérimental présente plusieurs limites méthodologiques à prendre en compte lors de l'interprétation des résultats :
+- **Un seul opérateur :** L'évaluation manuelle est exécutée par un opérateur unique, ce qui n'intègre pas la variabilité de cadence ou d'expérience entre différents utilisateurs.
+- **Échantillon de 20 messages :** Le jeu de données se limite à un panel représentatif de 20 cas de test, suffisant pour valider les comportements nominaux et limites, mais ne constituant pas un échantillon statistique à grande échelle.
+- **Conditions de test locales :** Les mesures sont réalisées dans un environnement de test local (conteneur Docker et scripts locaux), sans les latences réseau variables, les temps d'attente de webhooks distants ou la charge concurrente d'une exploitation en production.
+
