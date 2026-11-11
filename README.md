@@ -79,7 +79,6 @@ COD-Flow/
 │   ├── cahier_des_charges.md    # Spécifications fonctionnelles et techniques PFE
 │   ├── mesure.md                # Méthodologie du protocole de mesure comparative
 │   ├── mesure.csv               # Grille tabulaire pour les chronométrages réels
-│   └── post_linkedin.md         # Modèle de publication LinkedIn pour valoriser le PFE
 └── README.md                    # Documentation principale du projet
 ```
 
