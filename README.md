@@ -91,7 +91,7 @@ COD-Flow/
 - Compte gratuit **Make.com** (accès aux scénarios et webhooks).
 - Compte **Telegram** pour la création du bot client et du canal superviseur (via `@BotFather`).
 - Compte **Google** (Google Sheets pour la simulation de la feuille transporteur).
-
+- Compte ngrok avec domaine fixe
 ---
 
 ## 🚀 Guide d'Installation Pas à Pas
