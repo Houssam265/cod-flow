@@ -1,77 +1,83 @@
 # Cahier des Charges Fonctionnel et Technique - Projet COD-Flow
 
 ## 1. Contexte et Objectifs du Projet
-Le projet **COD-Flow** est un projet personnel de portfolio en automatisation ERP (Odoo / SAP). Il vise à concevoir, déployer et évaluer une architecture d'automatisation intégrale pour les petites et moyennes entreprises marocaines opérant en **Cash On Delivery (COD)**.
+Le projet **COD-Flow** est un projet personnel de portfolio en ingénierie logicielle et automatisation ERP (Odoo 18 / Make.com). Il vise à concevoir, déployer et évaluer une architecture d'automatisation des commandes pour les activités de vente en ligne opérant en **Cash On Delivery (COD)**.
 
 ### 1.1 Objectifs Clés
-- **Automatisation Zéro Saisie :** Réduire le temps de traitement d'une commande reçue par messagerie instantanée à moins de 5 secondes.
-- **Fiabilité des Données :** Éliminer les erreurs de retranscription manuelle grâce à un parseur sémantique LLM spécialisé pour le dialecte marocain (Darija / Arabizi) et le Français.
-- **Optimisation de la Délivrance COD :** Réduire le taux de retour des colis (hypothèse : 20 % à 30 % d'échec, taux réel à mesurer) grâce à un cycle automatisé de relances ciblées à J+1 et J+2 pour les clients injoignables.
-- **Bouclage Comptable Immédiat :** Clôturer automatiquement le cycle logistique et financier dans l'ERP dès la notification de remise des espèces par le transporteur.
+- **Automatisation Zéro Saisie :** Éliminer la recopie manuelle des messages de messagerie instantanée dans l'ERP.
+- **Fiabilité des Données :** Normaliser l'extraction des données de commande grâce au modèle Gemini (articles, quantités, nom, téléphone, adresse, ville).
+- **Cycle Financier et Logistique Intégré :** Valider la livraison, générer la facture client et enregistrer le paiement espèces COD directement dans Odoo dès notification du livreur.
 
 ---
 
-## 2. Périmètre Fonctionnel
+## 2. Périmètre Fonctionnel (v1)
 
-### Module F1 : Réception Multi-Canale et Extraction Sémantique
-- Capture des messages textuels entrants depuis Telegram ou WhatsApp.
-- Extraction normalisée des entités :
+### Module F1 : Réception des Messages et Extraction Sémantique
+- Capture des messages textuels entrants via un webhook Telegram unique.
+- Extraction des entités via Gemini (modèle Flash, gemini-3.6-flash) (offre gratuite) avec le catalogue produit intégré au prompt système :
   - Identité du client (`nom`).
-  - Coordonnées téléphoniques au format marocain (`telephone`).
-  - Ville de livraison normalisée (`ville`).
-  - Adresse physique détaillée (`adresse`).
-  - Articles commandés et quantités (`articles[{reference_ou_nom, quantite}]`).
-- Détection des commandes incomplètes et génération automatique de messages de clarification.
+  - Coordonnées téléphoniques (`telephone`).
+  - Ville de livraison (`ville`).
+  - Adresse de livraison (`adresse`).
+  - Articles commandés et quantités (`articles[{code, quantite, prix}]`).
 
-### Module F2 : Intégration ERP Odoo 18
-- Contrôle strict anti-doublon (message ID unique et fenêtre temporelle de 24h).
-- Déduplication et création automatique du contact client (`res.partner`) avec numéro formaté `+212`.
-- Correspondance dynamique des articles avec le catalogue de produits (`product.product`).
-- Création du devis (`sale.order`) et notification d'arbitrage au client.
+### Module F2 : Intégration ERP Odoo 18 (Module "Make an API Call")
+- Déduplication anti-doublon sur une fenêtre de 10 minutes par client.
+- Recherche du contact client (`res.partner`, `search_read`) par téléphone.
+- Création du contact si absent (`res.partner`, `create`).
+- Création du devis de vente (`sale.order`, `create`) avec les lignes d'articles correspondantes et stockage du `chat_id` Telegram dans le champ `client_order_ref` pour la réidentification.
+- Envoi du récapitulatif de devis au client avec consigne de répondre `"oui"` pour valider.
 
-### Module F3 : Gestion des Stocks et Logistique COD
-- Confirmation de la commande (`action_confirm`) sur validation client.
-- Contrôle de la disponibilité physique en stock (`action_assign`).
-- Déclenchement automatique d'une demande de prix fournisseur (`purchase.order`) en cas de rupture de stock.
-- Synchronisation bidirectionnelle avec la feuille de route du transporteur (Google Sheets).
+### Module F3 : Confirmation et Contrôle de Stock
+- Déclenchement sur message `"oui"` du client.
+- Recherche du devis en attente (`sale.order`, `search_read`) via la référence de commande (`client_order_ref`).
+- Confirmation de la vente (`sale.order`, `action_confirm`), générant le bon de livraison.
+- Contrôle de disponibilité physique du stock sur le bon de livraison (`stock.picking`, `search_read`).
+- Si rupture de stock (`state != 'assigned'`) : déclenchement d'une alerte Telegram à l'administrateur (ID fixe).
 
-### Module F4 : Clôture Financière et Encaissement
-- Traitement en temps réel des trois statuts logistiques :
-  - **Livré :** Validation du bon de livraison (`button_validate`), création de facture (`_create_invoices`), validation comptable (`action_post`), enregistrement du paiement espèces COD (`account.payment.register`).
-  - **Injoignable :** Protocole de relances automatiques J+1 et J+2 avec message d'avertissement.
-  - **Refusé :** Annulation du bon de livraison, réintégration en stock et annulation de la vente.
-
-### Module F5 : Monitoring et Reporting Exécutif
-- Journalisation centralisée des requêtes et erreurs.
-- Diffusion d'un rapport quotidien automatisé à 18h00 sur Telegram récapitulant :
-  - Volume de commandes traitées.
-  - Taux de confirmation et de délivrance.
-  - Chiffre d'Affaires total encaissé en espèces.
-  - Alertes de seuil de stock minimum.
+### Module F4 : Clôture Logistique, Facturation et Paiement COD
+- Déclenchement sur message transporteur `"livré S000xx"`.
+- Recherche et validation du bon de livraison (`stock.picking`, `button_validate`).
+- Création de la facture client via le wizard Odoo (`sale.advance.payment.inv`, `create` puis `create_invoices`).
+- Recherche et comptabilisation de la facture (`account.move`, `search_read`, `action_post`, `read`).
+- Enregistrement du paiement espèces COD (`account.payment.register`, `create` puis `action_create_payments`).
+- Notification Telegram de confirmation de livraison et d'encaissement envoyée au client.
 
 ---
 
 ## 3. Spécifications Techniques et Contraintes
 
 ### 3.1 Environnement et Stack Logicielle
-- **ERP :** Odoo 18.0 Community Edition déployé sous conteneur Docker officiel.
+- **ERP :** Odoo 18.0 Community Edition conteneurisé sous Docker.
 - **Base de Données :** PostgreSQL 16 Alpine conteneurisé avec volumes persistants.
-- **Protocoles d'Intégration :** XML-RPC standard via `/xmlrpc/2/common` et `/xmlrpc/2/object`.
-- **Orchestration de Flux :** Make.com (scénarios modulaires S1, S2, S3, S4).
-- **Moteur d'IA :** Modèle de langage à choisir avec support Structured Outputs / JSON Schema (ex: GPT-4o-mini, Gemini Flash, etc.).
-- **Langage de Scripting :** Python 3 (bibliothèque standard uniquement pour garantir l'indépendance de déploiement).
+- **Port Odoo :** Port configurable (`${ODOO_PORT:-8269}` en local par défaut).
+- **Exposition Réseau :** Service ngrok conteneurisé exposant Odoo via un domaine fixe HTTPS pour les webhooks Make.
+- **Orchestration :** Scénario unique Make.com avec routeur (dû à la contrainte d'un webhook unique par bot Telegram). Tous les appels Odoo utilisent le module natif "Make an API Call".
+- **IA :** Gemini (modèle Flash, gemini-3.6-flash) (offre gratuite avec prompt incluant le catalogue).
+- **Scripts d'Initialisation :** Python 3 (bibliothèque standard) pour l'idempotence des configurations.
 
-### 3.2 Sécurité et Confidentialité
-- **Gestion des Secrets :** Aucun mot de passe, jeton ou clé d'API ne doit figurer dans le code source versionné. Utilisation exclusive du fichier `.env` protégé par `.gitignore`.
-- **Protection des Données Personnelles :** Traitement des coordonnées clients (téléphone, adresse) appliquant les principes de minimisation des données (sensibilisation aux recommandations CNDP au Maroc, sans garantie de conformité légale formelle pour cet environnement de test).
-- **Exposition Réseau :** Port configurable (8269 en local) ; un tunnel expose Odoo pour la démo.
+### 3.2 Sécurité et Données
+- **Gestion des Secrets :** Aucun secret versionné ; utilisation exclusive du fichier `.env` protégé par `.gitignore`.
+- **Données Personnelles :** Données de test uniquement. Utilisation de coordonnées fictives pour les démonstrations.
 
 ---
 
-## 4. Critères d'Acceptation et Livrables
-1. **Livrable 1 : Infrastructure Odoo Docker** opérationnelle via un fichier `docker-compose.yml` reproductible en une seule commande.
-2. **Livrable 2 : Scripts Python d'initialisation** idempotents, documentés et validés par un script de contrôle global (`check_setup.py`).
-3. **Livrable 3 : Fiches de spécification Make** exhaustives décrivant chaque module, mapping et route d'exception pour les 4 scénarios.
-4. **Livrable 4 : Dataset d'évaluation LLM** comportant au minimum 20 messages de test diversifiés (Français, Darija, ambigus, ruptures, doublons).
-5. **Livrable 5 : Cadre de mesure expérimentale** permettant de comparer la saisie manuelle et l'automatisation COD-Flow sur des métriques réelles.
+## 4. Limites de la v1
+1. **Confirmation restreinte :** Validation client déclenchée uniquement par le mot exact `"oui"`.
+2. **Fenêtre anti-doublon :** Détection limitée à une fenêtre de 10 minutes par client.
+3. **Catalogue statique dans le prompt :** Le catalogue produit est inscrit directement dans le prompt système Gemini.
+4. **Référence de commande :** L'identifiant de chat Telegram est stocké dans le champ `client_order_ref` du devis `sale.order`.
+5. **Administrateur unique :** L'identifiant Telegram administrateur pour les alertes de rupture est fixe.
+6. **Disponibilité locale :** Le PC hôte, Docker et le conteneur ngrok doivent rester allumés pour maintenir la passerelle active.
+7. **Offre gratuite Gemini :** Utilisation de l'API gratuite Gemini (les données peuvent être traitées pour améliorer les produits Google : données de test uniquement).
+8. **Périmètre logistique restreint :** Pas de feuille transporteur Google Sheets, pas de rapport quotidien automatisé, pas de relances J+1/J+2 et pas de gestion des livraisons refusées.
+9. **Conditions expérimentales :** Échantillon de test de 5 commandes, un seul opérateur, temps manuel dépendant de la concentration.
 
+---
+
+## 5. Évolutions (v2)
+- **Canaux e-commerce :** Intégration de connecteurs pour boutiques en ligne WooCommerce et Shopify.
+- **Supervision avancée :** Génération et diffusion d'un rapport quotidien d'activité à heure fixe.
+- **Relances automatisées :** Protocole de relance à J+1 et J+2 pour les destinataires injoignables.
+- **Réapprovisionnement :** Génération automatique d'une demande de prix fournisseur (`purchase.order`) en cas de rupture.
+- **Canal WhatsApp :** Extension du bot conversationnel sur WhatsApp Business API.

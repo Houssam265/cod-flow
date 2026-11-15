@@ -51,13 +51,13 @@ def run_simulator():
     args = parser.parse_args()
 
     env_path = load_env()
-    webhook_url = os.environ.get("MAKE_WEBHOOK_URL_S1") or os.environ.get("MAKE_WEBHOOK_URL")
+    webhook_url = os.environ.get("MAKE_WEBHOOK_URL") or os.environ.get("MAKE_WEBHOOK_URL_S1")
 
     print("=" * 70)
     print("      COD-Flow : SIMULATEUR D'ENVOI DE MESSAGES (MAKE WEBHOOK)")
     print("=" * 70)
     print(f"Fichier d'environnement : {env_path or 'Variables système'}")
-    print(f"URL Webhook Make (S1)  : {webhook_url or 'NON DÉFINIE'}")
+    print(f"URL Webhook Make        : {webhook_url or 'NON DÉFINIE'}")
     print(f"Mode simulation (Dry)   : {'OUI' if args.dry_run else 'NON'}")
     print("-" * 70)
 

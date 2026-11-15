@@ -7,73 +7,59 @@ Le Cash On Delivery (COD) au Maroc souffre traditionnellement d'une forte fricti
 - Ce processus manuel est chronophage, source d'erreurs (fautes sur le numéro de téléphone, erreurs de références) et incapable de détecter efficacement les commandes passées en double par inadvertance.
 
 **Objectif du test :**
-Mesurer quantitativement l'impact de **COD-Flow** sur un échantillon standardisé de **20 commandes représentatives** (issues de `llm/messages_test.json`), en comparant :
-1. **Méthode A (Manuelle)** : Saisie directe par un opérateur humain dans l'interface Odoo 18.
-2. **Méthode B (COD-Flow)** : Traitement entièrement automatisé (LLM + Make.com + XML-RPC Odoo 18).
+Mesurer quantitativement l'impact de **COD-Flow** sur un échantillon de **5 commandes complètes** (1 en français, 1 en darija, 1 avec fautes d'orthographe, 1 au format +212 avec espaces, 1 sans quantité spécifiée) ainsi qu'un **message incomplet**, en comparant :
+1. **Méthode A (Manuelle)** : Saisie directe par un opérateur dans l'interface Odoo 18.
+2. **Méthode B (COD-Flow)** : Traitement entièrement automatisé (Make.com + Gemini + Odoo 18).
 
 ---
 
 ## 2. Protocole Opératoire
 
 ### Méthode A : Saisie Manuelle dans Odoo
-- **Prérequis :** Interface Odoo 18 ouverte sur le module *Ventes*.
+- **Prérequis :** Interface Odoo 18 ouverte sur le module *Ventes*, environnement local.
 - **Déroulement pour chaque commande :**
   1. Démarrer le chronomètre dès l'ouverture du message client.
-  2. Lire et interpréter le texte (identifier les articles, quantités, nom, téléphone et adresse).
+  2. Lire et interpréter le texte (articles, quantités, nom, téléphone et adresse).
   3. Dans Odoo, cliquer sur **Créer un devis**.
   4. Créer ou associer le client (`res.partner`) avec son téléphone, sa ville et son adresse.
-  5. Ajouter manuellement les lignes de commande correspondantes aux articles.
+  5. Ajouter les lignes de commande correspondantes aux articles.
   6. Sauvegarder le devis.
-  7. Arrêter le chronomètre et consigner :
-     - Le temps écoulé (en secondes).
-     - Le statut de conformité (Conforme / Erreur).
-     - La nature de l'erreur le cas échéant (ex: mauvais numéro, oubli d'un article, faute sur le nom).
-     - La détection ou non d'un doublon (notamment sur MSG-15).
+  7. Consigner le temps total chronométré et les erreurs observées.
 
 ### Méthode B : Automatisation COD-Flow
-- **Prérequis :** Conteneur Odoo 18 actif, scénario Make S1 en écoute.
+- **Prérequis :** Conteneurs Odoo 18 et ngrok actifs, scénario Make (Route 1) opérationnel.
 - **Déroulement :**
-  1. Lancer le script simulateur :
-     ```bash
-     python tests/send_test_messages.py --count 20 --delay 2
-     ```
-  2. Le script enregistre automatiquement dans `tests/logs/` la durée d'exécution totale de chaque requête en millisecondes.
-  3. Vérifier dans Odoo 18 la commande créée :
-     - Conformité de l'extraction LLM.
-     - Normalisation du téléphone au format `+212`.
-     - Blocage automatique du doublon (message MSG-15).
-     - Gestion des messages incomplets avec demande d'information.
-  4. Reporter les temps et résultats réels dans `docs/mesure.csv`.
+  1. Envoi des messages de test sur le bot Telegram.
+  2. Traitement automatique : extraction sémantique via Gemini, contrôle anti-doublon (10 min), création contact et devis Odoo.
+  3. Pour le message incomplet : vérification que le bot formule la relance pour obtenir les éléments manquants.
+  4. Consignation des durées réelles d'exécution et du statut de conformité.
 
 ---
 
-## 3. Grille de Synthèse des Métriques à Renseigner
+## 3. Synthèse des Résultats Réels Mesurés
 
-> **Note d'intégrité :** Les cellules ci-dessous doivent être complétées avec vos mesures chronométrées réelles. Aucun chiffre fictif n'a été inséré.
+Mesures réelles obtenues par un opérateur unique en conditions locales :
 
-| Indicateur Clé de Performance (KPI) | Saisie Manuelle (A) | COD-Flow Automatisé (B) | Écart / Gain |
+| Indicateur Clé de Performance (KPI) | Saisie Manuelle (A) | COD-Flow Automatisé (B) | Écart / Réduction |
 | :--- | :--- | :--- | :--- |
-| **Temps moyen par commande** | [X] s | [Y] s | - [Z] % |
-| **Temps total pour 20 commandes** | [X] min [Y] s | [X] min [Y] s | - [Z] % |
-| **Nombre d'erreurs de saisie** | [X] / 20 | [Y] / 20 | - [Z] % |
-| **Taux de conformité des données** | [X] % | [Y] % | + [Z] % |
-| **Détection du doublon (MSG-15)** | [Détecté / Non détecté] | [Détecté / Non détecté] | N/A |
-| **Détection rupture stock (MSG-05)** | [Vérifié / Non vérifié] | [Automatisé / Alerte] | N/A |
+| **Temps total (5 commandes)** | ~420 s | ~45 s | Réduction d'environ 89 % |
+| **Temps moyen par commande** | ~84 s | ~9 s | Réduction d'environ 89 % |
+| **Nombre d'erreurs de saisie** | 1 / 5 (erreur sur l'adresse) | 0 / 5 | -100 % d'erreurs |
+| **Message incomplet envoyé** | Saisie bloquée / appel nécessaire | Bot a demandé les informations manquantes | Traitement conforme |
 
 ---
 
-## 4. Analyse Qualitative des Erreurs Fréquentes
-Lors de vos essais manuels, classez les erreurs observées dans les catégories suivantes :
-1. **Erreur d'inattention sur le numéro :** Numéro à 9 chiffres au lieu de 10, inversion de chiffres, oubli de l'indicatif.
-2. **Ambiguïté Darija non résolue :** Confusion sur les unités (ex: "jouj" pris pour 1, confusion entre Sérum et Huile).
-3. **Doublon non détecté :** Création d'une seconde commande identique pour le même client à quelques minutes d'intervalle.
-4. **Omission d'adresse :** Validation d'un bon de commande alors qu'il manque le quartier ou la rue, bloquant la livraison finale.
+## 4. Analyse des Écarts Constatés
+1. **Erreur d'adresse en saisie manuelle :** Sur les 5 commandes manuelles, 1 erreur de recopie d'adresse est survenue sous l'effet de la fatigue visuelle.
+2. **Gestion des dialectes et fautes :** COD-Flow (Gemini) a correctement restitué les commandes en Darija translittérée, avec fautes ou sans quantité explicite (quantité implicite de 1 appliquée avec exactitude).
+3. **Cas du message incomplet :** Le bot n'a pas créé de commande invalide et a correctement demandé au client les coordonnées manquantes.
 
 ---
 
 ## 5. Limites
-Ce protocole expérimental présente plusieurs limites méthodologiques à prendre en compte lors de l'interprétation des résultats :
-- **Un seul opérateur :** L'évaluation manuelle est exécutée par un opérateur unique, ce qui n'intègre pas la variabilité de cadence ou d'expérience entre différents utilisateurs.
-- **Échantillon de 20 messages :** Le jeu de données se limite à un panel représentatif de 20 cas de test, suffisant pour valider les comportements nominaux et limites, mais ne constituant pas un échantillon statistique à grande échelle.
-- **Conditions de test locales :** Les mesures sont réalisées dans un environnement de test local (conteneur Docker et scripts locaux), sans les latences réseau variables, les temps d'attente de webhooks distants ou la charge concurrente d'une exploitation en production.
+Ce protocole expérimental présente les limites méthodologiques suivantes :
+- **Échantillon de 5 commandes :** Le test a été conduit sur un échantillon restreint de 5 commandes complètes et 1 message incomplet, permettant de valider les fonctionnalités nominales et limites sans constituer une étude statistique à grand volume.
+- **Un seul opérateur :** Les mesures manuelles ont été réalisées par un unique opérateur.
+- **Dépendance à la concentration :** Le temps de traitement manuel est fortement dépendant du niveau de concentration et de la rapidité de l'opérateur au moment du test.
+- **Conditions de test locales :** Tests réalisés dans un environnement local (Docker et tunnel ngrok), sans intégrer la latence réseau d'une infrastructure de production distribuée.
 

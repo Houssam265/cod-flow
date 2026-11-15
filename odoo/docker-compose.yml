@@ -6,7 +6,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8269:8069"
+      - "${ODOO_PORT:-8269}:8069"
       - "8072:8072"
     environment:
       - HOST=db

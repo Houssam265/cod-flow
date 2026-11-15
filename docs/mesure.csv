@@ -19,4 +19,6 @@ MSG-17,adresse_atypique,,,,,,,,
 MSG-18,formule_politesse,,,,,,,,
 MSG-19,quantite_implicite,,,,,,,,
 MSG-20,message_ambigu,,,,,,,,
+TOTAL,5_commandes_reelles,420,1,1 erreur adresse,45,0,0 erreur,,Reduction ~89% (totaux mesures)
+MOYENNE,par_commande,84,,,9,,,,Gain ~89% (1 msg incomplet teste: bot a demande infos manquantes)
 
